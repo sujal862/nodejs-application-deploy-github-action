@@ -1,0 +1,11 @@
+services:
+  # Ye batata hai ki niche aap un containers (services) ki list doge jo aapko chalani hain.
+  app:
+    # Aapne apni service ka naam "app" rakha hai (aap kuch bhi rakh sakte ho).
+    build:
+      # Docker ko instruction hai ki image isi folder (".") mein maujood files se build kare.
+      context: . # Ye batata hai ki build ke liye kaunsi files use karni hain.
+      dockerfile: Dockerfile
+    restart: unless-stopped # Agar server restart ho ya container crash ho, to ye apne aap dubara start ho jayega (jab tak aap khud ise stop na karo).
+    ports:
+      - "8080:8080"
