@@ -1,23 +1,43 @@
+# 1. Workflow ka naam (Ye GitHub Actions ke tab mein dikhega)
 name: Deploy NodeJS Application to AWS
+
+# 2. Trigger: Ye script kab chalni chahiye?
 on:
   push:
     branches:
-        - main
+        - main  # Jab bhi tum 'main' branch par code push karoge, ye apne aap shuru ho jayega.
 
+# 3. Jobs: Kya kya kaam karna hai?
 jobs:
   deploy:
+    # Ye 'ubuntu-latest' GitHub ka apna ek temporary computer hai jo tumhara kaam karega.
     runs-on: ubuntu-latest
+
     steps:
+      # Step 1: GitHub ke server par tumhara code copy karna.
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # Step 2: Asli magic - AWS server se connect karke command chalana.
       - name: Deploy to EC2 via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ubuntu
-          key: ${{ secrets.SSH_KEY }}
+          # Ye Do cheezein humne GitHub Settings > Secrets mein chhupayi hain (Security ke liye).
+          host: ${{ secrets.SSH_HOST }}  # Tumhare AWS ka Public IP.
+          username: ubuntu               # AWS Ubuntu ka default username "ubuntu" hi hai
+          # command to generate SSH keys (Private + private.pub (public)) : ssh-keygen -t ed25519 -C "your_email@example.com"
+          key: ${{ secrets.SSH_KEY }}     # Tumhari Private SSH Key (Jo 'lock' kholegi). | remeber to copy the public ssh key into (vi ~/.ssh/authorized_keys) 
+
+          # Ye wo commands hain jo GitHub tumhare AWS server ke andar jaakar chalayega:
           script: |
+            # 1. Us folder mein jao jahan tumne pehli baar git clone kiya tha.
             cd /home/ubuntu/nodejs-application-deploy-github-action
+            
+            # 2. GitHub se naya (latest) code kheencho (pull karo).
             git pull
+            
+            # 3. Docker ko bolo: 
+            # 'up' -> Chalao, 
+            # '-d' -> Background mein (taki terminal band hone par app band na ho), 
+            # '--build' -> Agar code badla hai toh nayi image banao.
             docker compose up -d --build
