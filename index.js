@@ -6,7 +6,7 @@ const PORT = +process.env.port || 8080;
 app.get("/", (req, res) => {
     return res.json({
         status: "success",
-        message: "Hello from Sujal",
+        message: "Hello from devops enginner",
     })
 });
 
